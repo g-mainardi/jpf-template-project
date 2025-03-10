@@ -1,8 +1,13 @@
 package pcd.lab03.cswithlocks_jpf;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public abstract class Worker extends Thread {
+
+	protected AtomicInteger counter;
 		
-	public Worker(){
+	public Worker(final AtomicInteger counter){
+		this.counter = counter;
 	}
 
 	protected void print(String msg){
