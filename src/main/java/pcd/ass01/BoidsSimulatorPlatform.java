@@ -6,7 +6,6 @@ import java.util.concurrent.BrokenBarrierException;
 
 public class BoidsSimulatorPlatform {
     public static final int N_THREADS = 2;
-    private static final int MAX_ITERATIONS_PER_THREAD = 10;
     private final List<Thread> workers = new ArrayList<>();
     private final BoidsModel model;
 
@@ -18,8 +17,6 @@ public class BoidsSimulatorPlatform {
         var boids = model.getBoids();
 
         List<List<Boid>> partitions = partitionByNumber(boids, N_THREADS);
-        CyclicBarrier velBarrier = new CyclicBarrier(N_THREADS);
-        CyclicBarrier posBarrier = new CyclicBarrier(N_THREADS);
         MyBarrier velBarrier = new MyBarrier(N_THREADS);
         MyBarrier posBarrier = new MyBarrier(N_THREADS);
 
