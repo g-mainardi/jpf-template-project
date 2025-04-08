@@ -6,6 +6,8 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 public class BoidsSimulatorPlatform {
+    public static final int N_THREADS = 2;
+    private static final int MAX_ITERATIONS_PER_THREAD = 10;
     private final List<Thread> workers = new ArrayList<>();
     private final BoidsModel model;
 
@@ -15,11 +17,10 @@ public class BoidsSimulatorPlatform {
 
     private void initWorkers(BoidsModel model) {
         var boids = model.getBoids();
-        int nThreads = Runtime.getRuntime().availableProcessors();
 
-        List<List<Boid>> partitions = partitionByNumber(boids, nThreads);
-        CyclicBarrier velBarrier = new CyclicBarrier(nThreads);
-        CyclicBarrier posBarrier = new CyclicBarrier(nThreads);
+        List<List<Boid>> partitions = partitionByNumber(boids, N_THREADS);
+        CyclicBarrier velBarrier = new CyclicBarrier(N_THREADS);
+        CyclicBarrier posBarrier = new CyclicBarrier(N_THREADS);
 
         for (List<Boid> partition : partitions) {
             workers.add(new Thread(() -> update(partition, velBarrier, posBarrier)));
@@ -27,7 +28,7 @@ public class BoidsSimulatorPlatform {
     }
 
     protected void update(List<Boid> boids, CyclicBarrier velBarrier, CyclicBarrier posBarrier) {
-        while (true) {
+        for (int iteration = 0; iteration < MAX_ITERATIONS_PER_THREAD; iteration++) {
             boids.forEach(boid -> boid.updateVelocity(model));
             try {
                 velBarrier.await();
