@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoidsModel {
-    
+
+    private static final double DELTA_POS_X = 0.1;
+    private static final double DELTA_POS_Y = 0.2;
+    private static final double DELTA_VEL_X = 0.3;
+    private static final double DELTA_VEL_Y = 0.4;
     private final List<Boid> boids;
     private final double separationWeight;
     private final double alignmentWeight;
@@ -38,8 +42,8 @@ public class BoidsModel {
     public List<Boid> generateBoids(int nBoids) {
         List<Boid> lst = new ArrayList<>();
         for (int i = 0; i < nBoids; i++) {
-            P2d pos = new P2d(-width /2 + Math.random() * width, -height /2 + Math.random() * height);
-            V2d vel = new V2d(Math.random() * maxSpeed /2 - maxSpeed /4, Math.random() * maxSpeed /2 - maxSpeed /4);
+            P2d pos = new P2d(-width /2 + DELTA_POS_X * width, -height /2 + DELTA_POS_Y * height);
+            V2d vel = new V2d(DELTA_VEL_X * maxSpeed /2 - maxSpeed /4, DELTA_VEL_Y * maxSpeed /2 - maxSpeed /4);
             lst.add(new Boid(pos, vel));
         }
         return lst;
