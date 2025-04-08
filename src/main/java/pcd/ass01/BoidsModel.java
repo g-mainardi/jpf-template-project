@@ -42,8 +42,8 @@ public class BoidsModel {
     public List<Boid> generateBoids(int nBoids) {
         List<Boid> lst = new ArrayList<>();
         for (int i = 0; i < nBoids; i++) {
-            P2d pos = new P2d(-width /2 + DELTA_POS_X * width, -height /2 + DELTA_POS_Y * height);
-            V2d vel = new V2d(DELTA_VEL_X * maxSpeed /2 - maxSpeed /4, DELTA_VEL_Y * maxSpeed /2 - maxSpeed /4);
+            P2d pos = new P2d(DELTA_POS_X, DELTA_POS_Y);
+            V2d vel = new V2d(DELTA_VEL_X, DELTA_VEL_Y);
             lst.add(new Boid(pos, vel));
         }
         return lst;
