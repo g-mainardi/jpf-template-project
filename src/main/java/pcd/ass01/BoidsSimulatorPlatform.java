@@ -3,7 +3,6 @@ package pcd.ass01;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 public class BoidsSimulatorPlatform {
     public static final int N_THREADS = 2;
@@ -21,6 +20,8 @@ public class BoidsSimulatorPlatform {
         List<List<Boid>> partitions = partitionByNumber(boids, N_THREADS);
         CyclicBarrier velBarrier = new CyclicBarrier(N_THREADS);
         CyclicBarrier posBarrier = new CyclicBarrier(N_THREADS);
+        MyBarrier velBarrier = new MyBarrier(N_THREADS);
+        MyBarrier posBarrier = new MyBarrier(N_THREADS);
 
         for (List<Boid> partition : partitions) {
             workers.add(new Thread(() -> update(partition, velBarrier, posBarrier)));
@@ -29,6 +30,8 @@ public class BoidsSimulatorPlatform {
 
     protected void update(List<Boid> boids, CyclicBarrier velBarrier, CyclicBarrier posBarrier) {
         for (int iteration = 0; iteration < MAX_ITERATIONS_PER_THREAD; iteration++) {
+    protected void update(List<Boid> boids, MyBarrier velBarrier, MyBarrier posBarrier) {
+        while(true) {
             boids.forEach(boid -> boid.updateVelocity(model));
             try {
                 velBarrier.await();
