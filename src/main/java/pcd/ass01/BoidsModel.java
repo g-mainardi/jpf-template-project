@@ -9,7 +9,7 @@ public class BoidsModel {
     private static final double DELTA_POS_Y = 0.2;
     private static final double DELTA_VEL_X = 0.3;
     private static final double DELTA_VEL_Y = 0.4;
-    private final List<Boid> boids;
+    private List<Boid> boids;
     private final double separationWeight;
     private final double alignmentWeight;
     private final double cohesionWeight;
@@ -52,6 +52,18 @@ public class BoidsModel {
     public List<Boid> getBoids(){
     	return boids;
     }
+
+    public void setBoids(List<Boid> boids){
+        this.boids = boids;
+    }
+
+    public List<Boid> getBoidsCopy(){
+        List<Boid> copy = new ArrayList<>();
+        for (Boid b : boids) {
+            copy.add(new Boid(b));
+        }
+        return copy;
+    }
     
     public double getMinX() {
     	return -width/2;
@@ -77,15 +89,15 @@ public class BoidsModel {
     	return height;
     }
 
-    public synchronized double getSeparationWeight() {
+    public double getSeparationWeight() {
     	return separationWeight;
     }
 
-    public synchronized double getCohesionWeight() {
+    public double getCohesionWeight() {
     	return cohesionWeight;
     }
 
-    public synchronized double getAlignmentWeight() {
+    public double getAlignmentWeight() {
     	return alignmentWeight;
     }
     

@@ -12,6 +12,11 @@ public class Boid {
     	this.pos = pos;
     	this.vel = vel;
     }
+
+    public Boid(Boid other) {
+        this.pos = other.getPos();
+        this.vel = other.getVel();
+    }
     
     public P2d getPos() {
     	return pos;

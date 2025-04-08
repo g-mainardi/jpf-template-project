@@ -8,16 +8,17 @@ public class BoidsSimulatorPlatform {
     public static final int N_THREADS = 2;
     private final List<Thread> workers = new ArrayList<>();
     private final BoidsModel model;
+    private List<Boid> boidsCopy;
 
     public BoidsSimulatorPlatform(BoidsModel model) {
         this.model = model;
     }
 
     private void initWorkers(BoidsModel model) {
-        var boids = model.getBoids();
+        boidsCopy = model.getBoidsCopy();
 
-        List<List<Boid>> partitions = partitionByNumber(boids, N_THREADS);
-        MyBarrier velBarrier = new MyBarrier(N_THREADS);
+        List<List<Boid>> partitions = partitionByNumber(boidsCopy, N_THREADS);
+        MyBarrier velBarrier = new MyBarrier(N_THREADS, this::updateBoidsFromCopy);
         MyBarrier posBarrier = new MyBarrier(N_THREADS);
 
         for (List<Boid> partition : partitions) {
@@ -25,8 +26,10 @@ public class BoidsSimulatorPlatform {
         }
     }
 
-    protected void update(List<Boid> boids, CyclicBarrier velBarrier, CyclicBarrier posBarrier) {
-        for (int iteration = 0; iteration < MAX_ITERATIONS_PER_THREAD; iteration++) {
+    private void updateBoidsFromCopy() {
+        this.model.setBoids(boidsCopy);
+    }
+
     protected void update(List<Boid> boids, MyBarrier velBarrier, MyBarrier posBarrier) {
         while(true) {
             boids.forEach(boid -> boid.updateVelocity(model));
