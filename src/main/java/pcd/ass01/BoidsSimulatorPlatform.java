@@ -53,6 +53,14 @@ public class BoidsSimulatorPlatform {
     public void runSimulation() {
         this.initWorkers(model);
         this.workers.forEach(Thread::start);
+        for (int i=0; i < this.workers.size(); i++) {
+            try {
+                this.workers.get(i).join();
+            } catch (InterruptedException ignore) {
+                System.out.println("Thread [" + i + "] finished");
+            }
+        }
+        System.out.println("Run Simulation ended after waiting all threads");
     }
 
     public static <E> List<List<E>> partitionByNumber(List<E> elems, int numberOfPartitions) {
