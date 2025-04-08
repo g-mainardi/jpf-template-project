@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import static pcd.ass01.ListUtils.partitionByNumber;
-
 public class BoidsSimulatorPlatform {
     private final List<Thread> workers = new ArrayList<>();
     private final BoidsModel model;
@@ -52,4 +50,14 @@ public class BoidsSimulatorPlatform {
         this.workers.forEach(Thread::start);
     }
 
+    public static <E> List<List<E>> partitionByNumber(List<E> elems, int numberOfPartitions) {
+        List<List<E>> partitions = new ArrayList<>();
+        for (int i = 0; i < numberOfPartitions; i++) {
+            partitions.add(new ArrayList<E>());
+        }
+        for (int i = 0; i < elems.size(); i++) {
+            partitions.get(i % numberOfPartitions).add(elems.get(i));
+        }
+        return partitions;
+    }
 }
