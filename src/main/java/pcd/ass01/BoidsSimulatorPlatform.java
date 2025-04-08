@@ -32,15 +32,19 @@ public class BoidsSimulatorPlatform {
             boids.forEach(boid -> boid.updateVelocity(model));
             try {
                 velBarrier.await();
-            } catch (InterruptedException | BrokenBarrierException e) {
+            } catch (InterruptedException e) {
                 System.out.println("Thread [" + Thread.currentThread().getName() + "] interrupted while waiting for velocity barrier");
+            } catch (BrokenBarrierException e) {
+                System.out.println("Thread [" + Thread.currentThread().getName() + "] broken velocity barrier");
             }
             velBarrier.reset();
             boids.forEach(boid -> boid.updatePos(model));
             try {
                 posBarrier.await();
-            } catch (InterruptedException | BrokenBarrierException e) {
+            } catch (InterruptedException e) {
                 System.out.println("Thread [" + Thread.currentThread().getName() + "] interrupted while waiting for position barrier");
+            } catch (BrokenBarrierException e) {
+                System.out.println("Thread [" + Thread.currentThread().getName() + "] broken position barrier");
             }
             posBarrier.reset();
         }
