@@ -15,10 +15,25 @@ package pcd.ass01;
  * objects are completely state-less
  *
  */
-public record V2d(double x,double y) {
+public class V2d {
+    private final double x;
+    private final double y;
+
+    public V2d(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public double x() {
+        return x;
+    }
+
+    public double y() {
+        return y;
+    }
 
     public V2d sum(V2d v){
-        return new V2d(x+v.x,y+v.y);
+        return new V2d(x+v.x(),y+v.y());
     }
 
     public double abs(){
