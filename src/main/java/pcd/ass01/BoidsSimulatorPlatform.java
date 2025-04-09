@@ -8,26 +8,19 @@ public class BoidsSimulatorPlatform {
     public static final int N_THREADS = 2;
     private final List<Thread> workers = new ArrayList<>();
     private final BoidsModel model;
-    private List<Boid> boidsCopy;
 
     public BoidsSimulatorPlatform(BoidsModel model) {
         this.model = model;
     }
 
-    private void initWorkers(BoidsModel model) {
-        boidsCopy = model.getBoidsCopy();
-
-        List<List<Boid>> partitions = partitionByNumber(boidsCopy, N_THREADS);
-        MyBarrier velBarrier = new MyBarrier(N_THREADS, this::updateBoidsFromCopy);
+    private void initWorkers() {
+        List<List<Boid>> partitions = partitionByNumber(this.model.getBoids(), N_THREADS);
+        MyBarrier velBarrier = new MyBarrier(N_THREADS);
         MyBarrier posBarrier = new MyBarrier(N_THREADS);
 
         for (List<Boid> partition : partitions) {
             workers.add(new Thread(() -> update(partition, velBarrier, posBarrier)));
         }
-    }
-
-    private void updateBoidsFromCopy() {
-        this.model.setBoids(boidsCopy);
     }
 
     protected void update(List<Boid> boids, MyBarrier velBarrier, MyBarrier posBarrier) {
@@ -54,7 +47,7 @@ public class BoidsSimulatorPlatform {
     }
 
     public void runSimulation() {
-        this.initWorkers(model);
+        this.initWorkers();
         this.workers.forEach(Thread::start);
         for (int i=0; i < this.workers.size(); i++) {
             try {

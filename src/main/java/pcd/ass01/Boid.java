@@ -2,20 +2,18 @@ package pcd.ass01;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Boid {
 
     private P2d pos;
     private V2d vel;
+    private final Lock updateVelocityLock = new ReentrantLock();
 
     public Boid(P2d pos, V2d vel) {
     	this.pos = pos;
     	this.vel = vel;
-    }
-
-    public Boid(Boid other) {
-        this.pos = other.getPos();
-        this.vel = other.getVel();
     }
     
     public P2d getPos() {
@@ -23,7 +21,10 @@ public class Boid {
     }
 
     public V2d getVel() {
-    	return vel;
+        updateVelocityLock.lock();
+        var value = vel;
+        updateVelocityLock.unlock();
+    	return value;
     }
 
     public void updateVelocity(BoidsModel model) {
@@ -35,7 +36,8 @@ public class Boid {
     	V2d separation = calculateSeparation(nearbyBoids, model);
     	V2d alignment = calculateAlignment(nearbyBoids, model);
     	V2d cohesion = calculateCohesion(nearbyBoids, model);
-    	
+
+        updateVelocityLock.lock();
     	vel = vel.sum(alignment.mul(model.getAlignmentWeight()))
     			.sum(separation.mul(model.getSeparationWeight()))
     			.sum(cohesion.mul(model.getCohesionWeight()));
@@ -43,17 +45,19 @@ public class Boid {
         /* Limit speed to MAX_SPEED */
 
         double speed = vel.abs();
-        
+
         if (speed > model.getMaxSpeed()) {
             vel = vel.getNormalized().mul(model.getMaxSpeed());
         }
-    }    
-    
+        updateVelocityLock.unlock();
+    }
+
     public void updatePos(BoidsModel model) {
 
         /* Update position */
-
+        updateVelocityLock.lock();
         pos = pos.sum(vel);
+        updateVelocityLock.unlock();
         
         /* environment wrap-around */
         
@@ -88,7 +92,10 @@ public class Boid {
 	        }	        
 	        avgVx /= nearbyBoids.size();
 	        avgVy /= nearbyBoids.size();
-	        return new V2d(avgVx - vel.x(), avgVy - vel.y()).getNormalized();
+            updateVelocityLock.lock();
+            var newVel = new V2d(avgVx - vel.x(), avgVy - vel.y()).getNormalized();
+            updateVelocityLock.unlock();
+	        return newVel;
         } else {
         	return new V2d(0, 0);
         }
